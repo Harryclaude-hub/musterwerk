@@ -17,7 +17,9 @@ function tabs(){
   const btns=document.querySelectorAll("[role=tab]");
   btns.forEach(b=>b.addEventListener("click",()=>{
     btns.forEach(x=>{x.setAttribute("aria-selected",x===b);$(x.dataset.p).hidden=x!==b});
+    history.replaceState(null,"","#"+b.dataset.p.slice(2));
   }));
+  if(location.hash==="#card")btns[1].click();
 }
 
 /* ---------- Muster-Karte (immer mit Wasserzeichen) ---------- */
@@ -73,9 +75,11 @@ function renderDoc(){
   const k=$("dtype").value,from=esc($("from").value).replace(/\n/g,"<br>"),to=esc($("to").value).replace(/\n/g,"<br>");
   const nr=esc($("nr").value),dt=esc($("date").value),vat=parseFloat($("vat").value)||0,it=items();
   const net=it.reduce((s,i)=>s+i.q*i.p,0),tax=net*vat/100;
-  let h=`<p>${from}</p><p><strong>An:</strong><br>${to}</p>`;
+  const ac=/^#[0-9a-f]{6}$/i.test($("accent").value)?$("accent").value:"#1c3b7a";
+  const lg=/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+\/=]+$/.test(TPL.logo)?`<img src="${TPL.logo}" alt="Logo" style="max-height:60px;float:right">`:"";
+  let h=`${lg}<p>${from}</p><p><strong>An:</strong><br>${to}</p>`;
   if(k==="vertrag"){
-    h+=`<h2>Dienstleistungsvertrag Nr. ${nr}</h2><p>Datum: ${dt}</p>
+    h+=`<h2 style="color:${ac}">Dienstleistungsvertrag Nr. ${nr}</h2><p>Datum: ${dt}</p>
     <p><strong>1. Leistung.</strong> Der Auftragnehmer erbringt folgende Leistungen:</p><ul>${it.map(i=>`<li>${esc(i.t)}</li>`).join("")}</ul>
     <p><strong>2. Verguetung.</strong> Das Entgelt betraegt ${eur(net)} netto zuzueglich ${vat} % Umsatzsteuer (${eur(tax)}), gesamt ${eur(net+tax)}. Zahlbar binnen 14 Tagen nach Rechnungslegung.</p>
     <p><strong>3. Laufzeit.</strong> Der Vertrag beginnt am ${dt} und endet mit vollstaendiger Leistungserbringung.</p>
@@ -83,14 +87,37 @@ function renderDoc(){
     <p style="margin-top:50px">______________________ &nbsp;&nbsp;&nbsp;&nbsp; ______________________<br>Auftragnehmer &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Auftraggeber</p>`;
   }else{
     const titel=k==="rechnung"?"Rechnung":"Angebot";
-    h+=`<h2>${titel} Nr. ${nr}</h2><p>Datum: ${dt}</p><table><tr><th>Position</th><th class="r">Menge</th><th class="r">Einzelpreis</th><th class="r">Summe</th></tr>`+
+    h+=`<h2 style="color:${ac}">${titel} Nr. ${nr}</h2><p>Datum: ${dt}</p><table><tr style="background:${ac};color:#fff"><th>Position</th><th class="r">Menge</th><th class="r">Einzelpreis</th><th class="r">Summe</th></tr>`+
     it.map(i=>`<tr><td>${esc(i.t)}</td><td class="r">${i.q}</td><td class="r">${eur(i.p)}</td><td class="r">${eur(i.q*i.p)}</td></tr>`).join("")+
     `<tr><td colspan="3" class="r">Netto</td><td class="r">${eur(net)}</td></tr><tr><td colspan="3" class="r">USt ${vat} %</td><td class="r">${eur(tax)}</td></tr><tr><td colspan="3" class="r"><strong>Gesamt</strong></td><td class="r"><strong>${eur(net+tax)}</strong></td></tr></table>`+
     (k==="rechnung"?`<p>Zahlbar binnen 14 Tagen ohne Abzug. Bitte Rechnungsnummer angeben.</p>`:`<p>Dieses Angebot ist 30 Tage ab Datum gueltig.</p>`);
   }
+  h+=`<p style="margin-top:40px;border-top:2px solid ${ac};padding-top:8px;font-size:.85rem;color:#555">${esc($("foot2").value).replace(/\n/g,"<br>")}</p>`;
   $("doc").innerHTML=h;
 }
+/* Eigene Vorlage: nur lokal im Browser (localStorage) */
+let TPL={logo:""};
+function tplLoad(){
+  try{const t=JSON.parse(localStorage.getItem("mw_tpl")||"{}");
+    if(/^#[0-9a-f]{6}$/i.test(t.accent||""))$("accent").value=t.accent;
+    if(typeof t.foot==="string")$("foot2").value=t.foot.slice(0,500);
+    if(typeof t.logo==="string")TPL.logo=t.logo;}catch(e){}
+}
+function tplInit(){
+  tplLoad();
+  $("logo").addEventListener("change",e=>{
+    const f=e.target.files[0];if(!f)return;
+    if(!/^image\/(png|jpeg|webp)$/.test(f.type)||f.size>300*1024){$("tmsg").textContent="Nur PNG, JPG oder WebP bis 300 KB.";e.target.value="";return}
+    const r=new FileReader();r.onload=()=>{TPL.logo=String(r.result);renderDoc()};r.readAsDataURL(f);
+  });
+  $("tsave").addEventListener("click",()=>{
+    try{localStorage.setItem("mw_tpl",JSON.stringify({accent:$("accent").value,foot:$("foot2").value,logo:TPL.logo}));$("tmsg").textContent="Vorlage gespeichert (nur in diesem Browser)."}
+    catch(e){$("tmsg").textContent="Speichern nicht moeglich (Logo zu gross?)."}
+  });
+  $("treset").addEventListener("click",()=>{localStorage.removeItem("mw_tpl");TPL.logo="";$("logo").value="";$("accent").value="#1c3b7a";$("tmsg").textContent="Zurueckgesetzt.";renderDoc()});
+}
 function docInit(){
+  tplInit();
   $("date").value=new Date().toISOString().slice(0,10);
   document.querySelectorAll("#dform input,#dform select,#dform textarea").forEach(e=>e.addEventListener("input",renderDoc));
   $("print").addEventListener("click",()=>window.print());

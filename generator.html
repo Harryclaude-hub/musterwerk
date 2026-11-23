@@ -25,6 +25,12 @@ Beispielweg 2, 1010 Wien</textarea>
 <textarea id="items" rows="4">Webdesign; 1; 1200
 Hosting pro Monat; 12; 15</textarea>
 <label for="vat">Umsatzsteuer in %</label><input id="vat" type="number" value="20" min="0" max="30" step="0.5">
+<details open><summary>Eigene Vorlage</summary>
+<label for="accent">Akzentfarbe</label><input id="accent" type="color" value="#1c3b7a" style="height:42px">
+<label for="logo">Logo (PNG, JPG oder WebP, max. 300 KB)</label><input id="logo" type="file" accept="image/png,image/jpeg,image/webp">
+<label for="foot2">Fusszeile (Bank, IBAN, Hinweise)</label><textarea id="foot2" rows="2">Bankverbindung: IBAN AT00 0000 0000 0000 0000</textarea>
+<p><button class="btn alt" id="tsave" type="button">Vorlage speichern</button> <button class="btn alt" id="treset" type="button">Zuruecksetzen</button></p>
+<p class="sub" id="tmsg" role="status" style="font-size:.9rem">Wird nur in diesem Browser gespeichert.</p></details>
 <p><button class="btn" id="print" type="button">Als PDF drucken</button></p>
 </form>
 <div id="doc" class="doc" aria-live="polite"></div>
