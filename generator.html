@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Generator | Musterwerk</title>
+<link rel="stylesheet" href="style.css"></head><body>
+<div id="nav"></div>
+<main id="main">
+<h1>Generator</h1>
+<div class="tabs" role="tablist">
+<button role="tab" aria-selected="true" data-p="p-doc">Dokumente</button>
+<button role="tab" aria-selected="false" data-p="p-card">Muster-Karte</button>
+</div>
+
+<section id="p-doc" class="two">
+<form id="dform" class="card" onsubmit="return false">
+<label for="dtype">Art</label><select id="dtype"><option value="rechnung">Rechnung</option><option value="angebot">Angebot</option><option value="vertrag">Dienstleistungsvertrag</option></select>
+<label for="nr">Nummer</label><input id="nr" value="2026-001">
+<label for="date">Datum</label><input id="date" type="date">
+<label for="from">Absender (Name, Adresse, UID)</label><textarea id="from" rows="3">Muster GmbH
+Musterstrasse 1, 5020 Salzburg
+UID ATU00000000</textarea>
+<label for="to">Empfaenger</label><textarea id="to" rows="3">Beispiel AG
+Beispielweg 2, 1010 Wien</textarea>
+<label for="items">Positionen (je Zeile: Beschreibung; Menge; Einzelpreis)</label>
+<textarea id="items" rows="4">Webdesign; 1; 1200
+Hosting pro Monat; 12; 15</textarea>
+<label for="vat">Umsatzsteuer in %</label><input id="vat" type="number" value="20" min="0" max="30" step="0.5">
+<p><button class="btn" id="print" type="button">Als PDF drucken</button></p>
+</form>
+<div id="doc" class="doc" aria-live="polite"></div>
+</section>
+
+<section id="p-card" class="two" hidden>
+<form class="card" onsubmit="return false">
+<p class="note">Fiktives Land, festes Wasserzeichen. Das Wasserzeichen laesst sich nicht abschalten. Nur fuer Tests und Schulungen.</p>
+<label for="kind">Karten-Art</label><select id="kind"><option>Personalausweis</option><option>Fuehrerschein</option><option>Aufenthaltskarte</option></select>
+<label for="theme">Farbe</label><select id="theme"><option value="blau">Blau</option><option value="gruen">Gruen</option><option value="rot">Rot</option></select>
+<label for="sn">Nachname</label><input id="sn" value="MUSTERMANN" maxlength="28">
+<label for="gn">Vorname</label><input id="gn" value="MAX" maxlength="28">
+<label for="bd">Geburtsdatum</label><input id="bd" value="01.01.1990" maxlength="28">
+<label for="ex">Gueltig bis</label><input id="ex" value="01.01.2030" maxlength="28">
+<p><button class="btn" id="dl" type="button">Als PNG speichern</button></p>
+</form>
+<div class="card"><canvas id="card" width="856" height="540" aria-label="Vorschau der Muster-Karte"></canvas></div>
+</section>
+</main>
+<div id="foot"></div>
+<script src="app.js"></script>
+</body></html>
