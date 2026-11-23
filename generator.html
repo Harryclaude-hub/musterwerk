@@ -32,13 +32,16 @@ Hosting pro Monat; 12; 15</textarea>
 
 <section id="p-card" class="two" hidden>
 <form class="card" onsubmit="return false">
-<p class="note">Fiktives Land, festes Wasserzeichen. Das Wasserzeichen laesst sich nicht abschalten. Nur fuer Tests und Schulungen.</p>
+<p class="note">Eigenes Design, kein amtliches Layout, festes Wasserzeichen. Das Wasserzeichen laesst sich nicht abschalten. Nur fuer Tests und Schulungen.</p>
+<label for="ctry">Land (Feldnamen und Sprache)</label><select id="ctry"><option value="AT">Oesterreich</option><option value="DE">Deutschland</option><option value="FI">Finnland</option><option value="US">USA</option></select>
 <label for="kind">Karten-Art</label><select id="kind"><option>Personalausweis</option><option>Fuehrerschein</option><option>Aufenthaltskarte</option></select>
 <label for="theme">Farbe</label><select id="theme"><option value="blau">Blau</option><option value="gruen">Gruen</option><option value="rot">Rot</option></select>
 <label for="sn">Nachname</label><input id="sn" value="MUSTERMANN" maxlength="28">
 <label for="gn">Vorname</label><input id="gn" value="MAX" maxlength="28">
 <label for="bd">Geburtsdatum</label><input id="bd" value="01.01.1990" maxlength="28">
 <label for="ex">Gueltig bis</label><input id="ex" value="01.01.2030" maxlength="28">
+<p><label style="display:flex;gap:10px;align-items:flex-start;color:var(--text)"><input id="ok" type="checkbox" style="width:auto;margin-top:5px"><span>Ich nutze das Testmuster nur fuer Tests eigener Software, Schulungen oder Entwuerfe. Ich lege es nie als echten Ausweis vor, reiche es nie zur Identitaetspruefung ein und entferne das Wasserzeichen nicht. Ich habe die <a href="bedingungen.html" target="_blank" rel="noopener">Bedingungen</a> gelesen.</span></label></p>
+<p id="okmsg" class="note" hidden role="alert">Bitte zuerst bestaetigen.</p>
 <p><button class="btn" id="dl" type="button">Als PNG speichern</button></p>
 </form>
 <div class="card"><canvas id="card" width="856" height="540" aria-label="Vorschau der Muster-Karte"></canvas></div>

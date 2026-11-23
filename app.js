@@ -21,6 +21,12 @@ function tabs(){
 }
 
 /* ---------- Muster-Karte (immer mit Wasserzeichen) ---------- */
+const LAND={
+  AT:{n:"OESTERREICH",l:["Nachname","Vorname","Geburtsdatum","Gueltig bis","Nummer"]},
+  DE:{n:"DEUTSCHLAND",l:["Name","Vorname","Geburtsdatum","Gueltig bis","Nummer"]},
+  FI:{n:"FINNLAND",l:["Sukunimi","Etunimet","Syntymäaika","Voimassa","Numero"]},
+  US:{n:"USA",l:["Last name","First name","Date of birth","Expires","Number"]}
+};
 function drawCard(f){
   const c=$("card"),g=c.getContext("2d"),W=c.width,H=c.height;
   const val=id=>f?f[id]:$(id).value;
@@ -30,13 +36,13 @@ function drawCard(f){
   const gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,cols[0]);gr.addColorStop(1,cols[1]);
   g.fillStyle=gr;g.fillRect(0,0,W,H);
   g.fillStyle=cols[2];g.fillRect(0,0,W,70);
-  g.fillStyle="#fff";g.font="bold 26px sans-serif";g.fillText("REPUBLIK MUSTERLAND",24,32);
-  g.font="16px sans-serif";g.fillText(val("kind")+" (Muster, fiktiv)",24,56);
+  g.fillStyle="#fff";g.font="bold 26px sans-serif";const L=LAND[val("ctry")]||LAND.AT;g.fillText("TESTKARTE · "+L.n,24,32);
+  g.font="16px sans-serif";g.fillText(val("kind")+" (Testmuster, kein amtliches Dokument)",24,56);
   /* Foto-Platzhalter */
   g.fillStyle="#c9d2e2";g.fillRect(24,100,190,240);
   g.fillStyle="#8a96ad";g.beginPath();g.arc(119,185,42,0,7);g.fill();
   g.beginPath();g.ellipse(119,320,80,70,0,Math.PI,0);g.fill();
-  const rows=[["Nachname",v("sn")],["Vorname",v("gn")],["Geburtsdatum",v("bd")],["Gueltig bis",v("ex")],["Nummer","MUSTER-0000"]];
+  const rows=[[L.l[0],v("sn")],[L.l[1],v("gn")],[L.l[2],v("bd")],[L.l[3],v("ex")],[L.l[4],"TEST-0000"]];
   rows.forEach(([k,val],i)=>{const y=110+i*50;
     g.fillStyle="#44506b";g.font="13px sans-serif";g.fillText(k.toUpperCase(),240,y);
     g.fillStyle="#111";g.font="bold 24px monospace";g.fillText(val||"-",240,y+26);});
@@ -51,8 +57,10 @@ function drawCard(f){
   g.fillStyle="rgba(200,20,40,.9)";g.fillRect(0,H-12,W,12);
 }
 function cardInit(){
-  ["kind","theme","sn","gn","bd","ex"].forEach(id=>$(id).addEventListener("input",drawCard));
-  $("dl").addEventListener("click",()=>{$("card").toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="muster-karte.png";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)})});
+  ["ctry","kind","theme","sn","gn","bd","ex"].forEach(id=>$(id).addEventListener("input",()=>drawCard()));
+  $("dl").addEventListener("click",()=>{
+    if(!$("ok").checked){$("okmsg").hidden=false;$("ok").focus();return}
+    $("okmsg").hidden=true;$("card").toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="muster-karte.png";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)})});
   drawCard();
 }
 
